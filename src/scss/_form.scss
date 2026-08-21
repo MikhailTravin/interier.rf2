@@ -1,0 +1,367 @@
+/*.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    @media (max-width: 650px) {
+        gap: 16px 24px;
+    }
+    @media (max-width: 390px) {
+        gap: 10px;
+        flex-direction: column;
+    }
+    // .options__item
+
+    &__item {
+        flex: 1 1 auto;
+        position: relative;
+        cursor: pointer;
+        min-width: 80px;
+        @media (max-width: 650px) {
+            min-width: fit-content;
+            flex: 1 1 calc(50% - 24px);
+        }
+    }
+
+    // .options__input
+
+    &__input {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        position: absolute;
+        &:checked + .options__label {
+            color: #fff;
+            background-color: #5b2431;
+            border: 1px solid transparent;
+        }
+        &:checked + .options__label .options__icon svg {
+            fill: #ffffff;
+        }
+        &:checked + .options__label .options__price {
+            color: #ffffff;
+        }
+        &:checked + .options__label .block-info__icon svg {
+            fill: #cdb2b8;
+        }
+    }
+
+    // .options__label
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        position: relative;
+        border: 1px solid rgba(202, 200, 193, 0.5);
+        border-radius: 8px;
+        padding: 15px 9px 15px 9px;
+        cursor: pointer;
+        transition:
+            background-color 0.3s,
+            border 0.3s,
+            color 0.3s;
+        @media (max-width: 650px) {
+            padding: 10px 5px;
+        }
+    }
+
+    // .options__check
+
+    &__check {
+        width: 18px;
+        height: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        svg {
+            fill: #fff;
+        }
+        @media (max-width: 650px) {
+            display: none;
+        }
+    }
+
+    // .options__titles
+
+    &__titles {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    // .options__icon
+
+    &__icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        svg {
+            fill: #333;
+            transition: fill 0.3s;
+        }
+        @media (max-width: 650px) {
+            display: none;
+        }
+    }
+
+    // .options__text
+
+    &__text {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 143%;
+        text-align: center;
+    }
+
+    // .options__top
+
+    &__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        .options__check {
+            position: relative;
+            right: 0;
+            top: 0;
+            transform: translate(0, 0);
+        }
+    }
+
+    // .options__bottom
+
+    &__bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        @media (max-width: 650px) {
+            display: none;
+        }
+    }
+
+    // .options__price
+
+    &__price {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 100%;
+        color: #5b2431;
+        transition: color 0.3s;
+        @media (max-width: 650px) {
+            display: none;
+        }
+    }
+}
+.options-package {
+    display: grid;
+    gap: 10px 20px;
+    grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 650px) {
+        gap: 16px 24px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    @media (max-width: 390px) {
+        gap: 10px;
+        flex-direction: column;
+    }
+    .options__label {
+        padding: 5px 10px 8px 14px;
+        gap: 12px;
+        @media (max-width: 650px) {
+            justify-content: center;
+            align-items: center;
+            padding: 10px 5px;
+        }
+    }
+}*/
+
+.checkbox {
+    // .checkbox__input
+
+    &__input {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        position: absolute;
+        &:checked + .checkbox__label .checkbox__icon {
+            background-color: #5b2431;
+            border: 1px solid transparent;
+        }
+        &:checked + .checkbox__label .checkbox__icon svg {
+            opacity: 1;
+        }
+        &._form-error + .checkbox__label .checkbox__icon {
+            border: 1px solid #5b2431;
+        }
+    }
+
+    // .checkbox__label
+
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        @media (max-width: 768px) {
+            gap: 8px;
+        }
+    }
+
+    // .checkbox__icon
+
+    &__icon {
+        border: 1px solid #d6d6d6;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 0 0 20px;
+        width: 20px;
+        height: 20px;
+        svg {
+            opacity: 0;
+            transition: opacity 0.3s;
+            margin: 0px 0px 0px 1px;
+            fill: #ffffff;
+        }
+    }
+
+    // .checkbox__text
+
+    &__text {
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 129%;
+        color: #9a9a9a;
+        a {
+            text-decoration: underline;
+            text-decoration-skip-ink: none;
+            color: #642a38;
+            transition: opacity 0.3s;
+            @media (any-hover: hover) {
+                &:hover {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .btn {
+        min-height: 52px;
+        width: 100%;
+        font-size: 16px;
+        line-height: 150%;
+        @media (max-width: 768px) {
+            margin-top: 10px;
+        }
+    }
+    // .form__inputs
+
+    &__inputs {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    // .form__input
+
+    &__input {
+        width: 100%;
+        position: relative;
+        &._form-focus {
+            .form__placeholder {
+                font-size: 12px;
+                line-height: 133%;
+                top: 7px;
+                color: #8e8e93;
+                @media (max-width: 768px) {
+                    top: 4px;
+                    font-size: 10px;
+                }
+            }
+        }
+        &.filled {
+            .form__placeholder {
+                font-size: 12px;
+                line-height: 133%;
+                top: 7px;
+                color: #8e8e93;
+                @media (max-width: 768px) {
+                    top: 4px;
+                    font-size: 10px;
+                }
+            }
+        }
+        .input {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 150%;
+            width: 100%;
+            height: 52px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 20px 16px 0px 16px;
+            background-color: #fbfaf9;
+            transition:
+                border 0.3s,
+                background-color 0.3s;
+            @media (max-width: 768px) {
+                height: 40px;
+                font-size: 14px;
+                padding: 16px 16px 0px 16px;
+            }
+            &::placeholder {
+                opacity: 0;
+            }
+            &._form-error {
+                background-color: #fff;
+                border: 1px solid #642a38;
+            }
+        }
+    }
+
+    // .form__placeholder
+
+    &__placeholder {
+        pointer-events: none;
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 150%;
+        transition:
+            top 0.3s,
+            opacity 0.3s,
+            transform 0.3s,
+            color 0.3s;
+        @media (max-width: 768px) {
+            font-size: 14px;
+        }
+    }
+
+    // .form__checkboxes
+
+    &__checkboxes {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}
