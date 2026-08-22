@@ -1868,191 +1868,235 @@ function tabs() {
 tabs();
 
 //========================================================================================================================================================
-/*
 
-//========================================================================================================================================================
+document.addEventListener('DOMContentLoaded', function () {
+  const slider = document.querySelector('.block-calculator-quiz__slider');
+  const wrapper = slider?.querySelector('.block-calculator-quiz__wrapper');
+  const slides = wrapper?.querySelectorAll('.block-calculator-quiz__slide');
 
-function activateCheckboxByDataCheck(checkValue) {
-  if (!checkValue) return;
+  const questionSlides = Array.from(slides || []).filter(slide => !slide.classList.contains('slide-last-quiz'));
+  const totalQuestions = questionSlides.length;
+  const totalSlides = slides?.length || 0;
 
-  const radio = document.querySelector(`.block-calculator input.options__input[data-check="${checkValue}"]`);
-  if (!radio) {
-    console.warn(`Radio with data-check="${checkValue}" not found`);
-    return;
-  }
+  const prevBtn = document.querySelector('.btn-prev');
+  const nextBtn = document.querySelector('.btn-next');
+  const questionText = document.querySelector('.block-calculator-quiz__questions-text');
+  const pagination = document.querySelector('.block-calculator-quiz__pagination');
+  const progressFill = document.querySelector('.swiper-pagination-progressbar-fill');
+  const blockTop = document.querySelector('.block-calculator__top');
+  const quizNav = document.querySelector('.block-calculator-quiz__nav');
 
-  radio.checked = true;
+  let currentIndex = 0;
+  let isTransitioning = false;
+  let isAnimating = false;
 
-  const changeEvent = new Event('change', { bubbles: true });
-  radio.dispatchEvent(changeEvent);
+  const answers = {};
 
-  const label = radio.closest('.options__item');
-  if (label) {
-    const allLabels = label.closest('.options-package').querySelectorAll('.options__item');
-    allLabels.forEach(item => item.classList.remove('active'));
-    label.classList.add('active');
-  }
-}
+  wrapper.style.transition = 'none';
+  wrapper.style.transform = 'none';
 
-
-
-const blockCalc = document.querySelector('.block-calc');
-if (blockCalc) {
-  function updateResultTitles() {
-    const radioButtons = document.querySelectorAll('.options__input[type="radio"]:checked');
-    if (!radioButtons.length) return;
-
-    radioButtons.forEach(radio => {
-      const targetId = radio.getAttribute('data-target');
-      if (!targetId) return;
-
-      const targetElement = document.getElementById(targetId);
-      if (!targetElement) return;
-
-      const label = radio.closest('.options__item');
-      if (!label) return;
-
-      const textElement = label.querySelector('.options__text');
-      if (!textElement) return;
-
-      const priceElement = label.querySelector('.options__price');
-      if (priceElement) {
-        const text = textElement.textContent.trim();
-        const price = priceElement.textContent.trim();
-        if (text && price) {
-          targetElement.textContent = `${text}/${price}`;
-        }
-      } else {
-        const text = textElement.textContent.trim();
-        if (text) {
-          targetElement.textContent = text;
-        }
+  function getCurrentIndex() {
+    let activeIndex = 0;
+    slides?.forEach((slide, index) => {
+      if (slide.classList.contains('swiper-slide-active')) {
+        activeIndex = index;
       }
     });
+    return activeIndex;
   }
-  function initRadioHandlers() {
-    const radios = document.querySelectorAll('.options__input[type="radio"]');
-    if (!radios.length) return;
 
-    radios.forEach(radio => {
-      radio.addEventListener('change', function () {
-        if (this.checked) {
-          updateResultTitles();
-        }
-      });
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      initRadioHandlers();
-      updateResultTitles();
-    });
-  } else {
-    initRadioHandlers();
-    updateResultTitles();
-  }
-}
+  currentIndex = getCurrentIndex();
 
-//========================================================================================================================================================
+  function goToSlide(index) {
+    if (isTransitioning || index === currentIndex) return;
+    if (index < 0 || index >= totalSlides) return;
 
+    isTransitioning = true;
 
+    slides?.forEach((slide, i) => {
+      slide.classList.remove('swiper-slide-active', 'swiper-slide-prev', 'swiper-slide-next');
 
-if (document.querySelector('.block-reviews__slider')) {
-  const swiperReviews = new Swiper('.block-reviews__slider', {
-    observer: true,
-    observeParents: true,
-    slidesPerView: 1,
-    spaceBetween: 16,
-    speed: 800,
-    effect: "fade",
-    fadeEffect: {
-      crossFade: true
-    },
-    navigation: {
-      prevEl: '.block-reviews-arrow-prev',
-      nextEl: '.block-reviews-arrow-next',
-    },
-    on: {
-      init: function () {
-        updateFraction(this);
-      },
-      slideChange: function () {
-        updateFraction(this);
-      },
-    },
-  });
-
-  function updateFraction(swiper) {
-    const currentEl = document.querySelector('.block-reviews-pagination-fraction .swiper-pagination-current');
-    const totalEl = document.querySelector('.block-reviews-pagination-fraction .swiper-pagination-total');
-
-    if (currentEl && totalEl) {
-      let currentSlide;
-      if (swiper.params.loop) {
-        currentSlide = swiper.realIndex + 1;
+      if (i === index) {
+        slide.classList.add('swiper-slide-active');
+        slide.style.display = 'flex';
       } else {
-        currentSlide = swiper.activeIndex + 1;
+        slide.style.display = 'none';
       }
-      currentEl.textContent = currentSlide.toString();
+    });
 
-      let totalSlides;
-      if (swiper.params.loop) {
-        totalSlides = swiper.slides.length / 2;
-      } else {
-        totalSlides = swiper.slides.length;
-      }
+    currentIndex = index;
+    isTransitioning = false;
+    updateQuizState();
+  }
 
-      totalEl.textContent = totalSlides.toString();
+  function updateQuizState() {
+    const isLastSlide = currentIndex === totalSlides - 1;
+    const isFirstSlide = currentIndex === 0;
+
+    prevBtn.style.display = isFirstSlide ? 'none' : 'flex';
+
+    if (isLastSlide) {
+      blockTop.style.display = 'none';
+      quizNav.style.display = 'none';
+    } else {
+      blockTop.style.display = 'flex';
+      quizNav.style.display = 'flex';
     }
-  }
-}
 
-if (document.querySelector('.block-documents__slider')) {
-  let swiperDocuments = null;
-  const breakpoint = 768;
+    const currentQuestion = currentIndex + 1;
+    const displayNumber = isLastSlide ? totalQuestions : currentQuestion;
+    questionText.innerHTML = `Вопрос ${displayNumber}<span>/${totalQuestions}</span>`;
 
-  function initSwiper() {
-    const windowWidth = window.innerWidth;
+    if (isAnimating) return;
 
-    if (windowWidth <= breakpoint && !swiperDocuments) {
-      swiperDocuments = new Swiper('.block-documents__slider', {
-        observer: true,
-        observeParents: true,
-        slidesPerView: 1,
-        spaceBetween: 16,
-        speed: 800,
-        pagination: {
-          el: '.block-documents-pagination',
-          clickable: true,
-        },
-        on: {
-        },
-      });
-    } else if (windowWidth > breakpoint && swiperDocuments) {
-      swiperDocuments.destroy(true, true);
-      swiperDocuments = null;
+    let targetWidth;
+    const lastSlideIndex = totalSlides - 1;
+
+    if (currentIndex === 0) {
+      targetWidth = 20;
+    } else if (currentIndex === lastSlideIndex) {
+      targetWidth = 100;
+    } else {
+      const questionIndex = currentIndex;
+      targetWidth = (questionIndex / totalQuestions) * 100;
+    }
+
+    targetWidth = Math.max(20, Math.min(100, targetWidth));
+
+    if (progressFill) {
+      isAnimating = true;
+      progressFill.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      progressFill.style.width = `${targetWidth}%`;
+      isAnimating = false;
+    } else if (pagination) {
+      pagination.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      pagination.style.width = `${targetWidth}%`;
     }
   }
 
-  initSwiper();
-
-  let resizeTimeout;
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(initSwiper, 200);
+  document.querySelectorAll('.options1__input, .options2__input').forEach(input => {
+    input.addEventListener('change', function () {
+      const name = this.getAttribute('name');
+      const value = this.value;
+      answers[name] = value;
+    });
   });
-}
 
+  document.querySelectorAll('.options2__text input[type="text"]').forEach(input => {
+    input.addEventListener('input', function () {
+      if (this.value.trim().length > 0) {
+        const radio = this.closest('.options2__item').querySelector('.options2__input');
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change'));
+        }
+      }
+    });
+  });
 
+  document.querySelectorAll('.options1__item, .options2__item').forEach(optionItem => {
+    optionItem.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
 
-//========================================================================================================================================================
+      const currentSlide = slides[currentIndex];
+      if (!currentSlide) return;
+      if (currentSlide.classList.contains('slide-last-quiz')) return;
 
+      if (this.classList.contains('active')) {
+        this.classList.remove('active');
+        const radioInput = this.querySelector('input[type="radio"]');
+        if (radioInput) {
+          radioInput.checked = false;
+        }
+        const name = this.querySelector('input[type="radio"]')?.getAttribute('name');
+        if (name) {
+          delete answers[name];
+        }
+        return;
+      }
 
+      const allOptions = currentSlide.querySelectorAll('.options1__item, .options2__item');
+      allOptions.forEach(opt => {
+        opt.classList.remove('active');
+        const input = opt.querySelector('input[type="radio"]');
+        if (input) {
+          input.checked = false;
+        }
+      });
 
-//========================================================================================================================================================
+      this.classList.add('active');
+      const radioInput = this.querySelector('input[type="radio"]');
+      if (radioInput) {
+        radioInput.checked = true;
+        const changeEvent = new Event('change', { bubbles: true });
+        radioInput.dispatchEvent(changeEvent);
+      }
+    });
+  });
 
+  prevBtn.addEventListener('click', function () {
+    if (currentIndex > 0) {
+      goToSlide(currentIndex - 1);
+    }
+  });
 
+  nextBtn.addEventListener('click', function () {
+    const isLastQuizSlide = currentIndex === totalSlides - 2;
+    const isLastSlide = currentIndex === totalSlides - 1;
 
-*/
+    if (isLastQuizSlide) {
+      goToSlide(currentIndex + 1);
+      return;
+    }
 
-//========================================================================================================================================================
+    const currentSlide = slides[currentIndex];
+    const inputs = currentSlide.querySelectorAll('input[type="radio"]');
+    let isChecked = false;
+    inputs.forEach(input => {
+      if (input.checked) isChecked = true;
+    });
+
+    const textInput = currentSlide.querySelector('input[type="text"]');
+    if (textInput && textInput.value.trim().length > 0) {
+      isChecked = true;
+    }
+
+    if (isChecked) {
+      if (currentIndex < totalSlides - 1) {
+        goToSlide(currentIndex + 1);
+      }
+    } else {
+      const options = currentSlide.querySelectorAll('.options1__item, .options2__item');
+      options.forEach(opt => {
+        opt.style.animation = 'shake 0.5s';
+        opt.addEventListener('animationend', function handler() {
+          opt.style.animation = '';
+          opt.removeEventListener('animationend', handler);
+        });
+      });
+    }
+  });
+
+  slides?.forEach((slide, i) => {
+    slide.classList.remove('swiper-slide-active', 'swiper-slide-prev', 'swiper-slide-next');
+    if (i === currentIndex) {
+      slide.classList.add('swiper-slide-active');
+      slide.style.display = 'flex';
+    } else {
+      slide.style.display = 'none';
+    }
+  });
+
+  if (progressFill) {
+    progressFill.style.transition = 'none';
+    progressFill.style.width = '20%';
+    progressFill.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+  } else if (pagination) {
+    pagination.style.transition = 'none';
+    pagination.style.width = '20%';
+    pagination.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+  }
+
+  updateQuizState();
+});
