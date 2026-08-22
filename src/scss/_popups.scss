@@ -70,6 +70,7 @@
     // .popup__close
 
     &__close {
+        cursor: pointer;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -151,6 +152,46 @@
             padding: 0px 30px 0px 0px;
         }
     }
+
+    // .popup__text
+
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 143%;
+        span {
+            font-weight: 500;
+        }
+        ul {
+            li {
+                display: flex;
+                gap: 5px;
+                &::before {
+                    content: "";
+                    fleX: 0 0 3px;
+                    margin: 9px 0px 0px 0px;
+                    width: 3px;
+                    height: 3px;
+                    border-radius: 50%;
+                    background: var(--color-black);
+                }
+            }
+        }
+        a {
+            text-decoration: underline;
+            text-decoration-skip-ink: none;
+            transition: opacity 0.3s;
+            color: #006fff;
+            @media (any-hover: hover) {
+                &:hover {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
 }
 
 .popup-thanks {
@@ -191,5 +232,28 @@
             font-size: 18px;
             line-height: 133%;
         }
+    }
+}
+
+.popup-present {
+    padding: 20px;
+    .popup__content {
+        padding: 0px 0px 0px 0px;
+        max-width: 350px;
+        width: 100%;
+    }
+    .popup__close {
+        top: 10px;
+        right: 10px;
+        svg {
+            fill: #fff;
+        }
+    }
+}
+
+.popup-services {
+    .popup__content {
+        max-width: 345px;
+        padding: 90px 20px 20px 20px;
     }
 }
